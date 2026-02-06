@@ -19,13 +19,11 @@ void READ_AND_EXECUTE_FILE(std::string file)
         {
             file_ >> input;
             file_ >> ms;
-           // press(input[0],std::stoi(ms));
         }
         else if (input == "write")
         {
             file_ >> input;
             file_ >> ms;
-         //   write(input,std::stoi(ms));
         }
         log(input,ms);
     }
