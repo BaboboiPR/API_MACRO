@@ -13,7 +13,51 @@ struct instruction
 class Keyboard
 {
     protected:
-    static void press(char letter, int sleep) {
+
+    static void press(char letter, int sleep)
+    {
+        WORD vk = VkKeyScanA(letter) & 0xFF;              // map char to VK
+        WORD sc = MapVirtualKeyA(vk, MAPVK_VK_TO_VSC);    // VK -> scan code
+
+        INPUT input[2] = {};
+
+        // Key down (scan code)
+        input[0].type = INPUT_KEYBOARD;
+        input[0].ki.wScan = sc;
+        input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
+
+        // Key up (scan code)
+        input[1].type = INPUT_KEYBOARD;
+        input[1].ki.wScan = sc;
+        input[1].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+
+        SendInput(2, input, sizeof(INPUT));
+        SLEEP(sleep);
+    }
+
+    static void press_hold(char letter, int sleep, int hold)
+    {
+        WORD vk = VkKeyScanA(letter) & 0xFF;
+        WORD sc = MapVirtualKeyA(vk, MAPVK_VK_TO_VSC);
+
+        INPUT down = {};
+        INPUT up   = {};
+
+        down.type = INPUT_KEYBOARD;
+        down.ki.wScan = sc;
+        down.ki.dwFlags = KEYEVENTF_SCANCODE;
+
+        up.type = INPUT_KEYBOARD;
+        up.ki.wScan = sc;
+        up.ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+
+        SendInput(1, &down, sizeof(INPUT));
+        SLEEP(hold);
+        SendInput(1, &up, sizeof(INPUT));
+        SLEEP(sleep);
+    }
+
+    static void press_old(char letter, int sleep) {
         bool uppercase = 0;
         if (std::isupper(static_cast<unsigned char>(letter)))
         {
@@ -65,7 +109,7 @@ class Keyboard
         SLEEP(sleep);
 
     }
-    static void press (instruction it)
+    static void press_old (instruction it)
     {
         int i = 0;
         while (it.instructions[i] != '\0')
@@ -73,7 +117,7 @@ class Keyboard
             press(it.instructions[i],it.sleep[i]);
         }
     }
-    static void write(std::string word,int sleep)
+    static void write_old(std::string word,int sleep)
     {
         long max_index = word.length();
         for (long i = 0; i < max_index; i++)
@@ -82,7 +126,7 @@ class Keyboard
         }
 
     }
-    static void press_hold(char letter, int sleep,int hold) {
+    static void press_hold_old(char letter, int sleep,int hold) {
         bool uppercase = 0;
         if (std::isupper(static_cast<unsigned char>(letter)))
         {
