@@ -12,6 +12,29 @@ struct instruction_mouse
 class Mouse
 {
     public:
+    inline void leftClick() {
+        INPUT inputs[2] = {};
+
+        inputs[0].type = INPUT_MOUSE;
+        inputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+        inputs[1].type = INPUT_MOUSE;
+        inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+        SendInput(2, inputs, sizeof(INPUT));
+    }
+    inline void rightClick() {
+        INPUT inputs[2] = {};
+
+        inputs[0].type = INPUT_MOUSE;
+        inputs[0].mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+
+        inputs[1].type = INPUT_MOUSE;
+        inputs[1].mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+
+        SendInput(2, inputs, sizeof(INPUT));
+    }
+
     void moveCursor(int dx, int dy,int sleep) {
         INPUT input = {};
         input.type = INPUT_MOUSE;
@@ -21,7 +44,8 @@ class Mouse
         SendInput(1, &input, sizeof(INPUT));
         SLEEP(sleep);
     }
-    void moveCursoir(instruction_mouse it)
+
+    void moveCursor(instruction_mouse it)
     {
         BOOL result = SetCursorPos(it.position_x, it.position_y);
         if (!result)
